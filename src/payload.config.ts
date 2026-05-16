@@ -52,6 +52,9 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    meta: {
+      titleSuffix: '- TRX Computers CMS',
+    },
   },
   collections: [Users, Media, Brands, Categories, Products],
   editor: lexicalEditor(),
