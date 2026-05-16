@@ -204,6 +204,7 @@ export interface Category {
   image?: (number | null) | Media;
   parent?: (number | null) | Category;
   order?: number | null;
+  odooId?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -276,6 +277,7 @@ export interface Product {
   isFeatured?: boolean | null;
   isNewArrival?: boolean | null;
   isOnSale?: boolean | null;
+  odooId?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -426,6 +428,7 @@ export interface CategoriesSelect<T extends boolean = true> {
   image?: T;
   parent?: T;
   order?: T;
+  odooId?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -483,6 +486,7 @@ export interface ProductsSelect<T extends boolean = true> {
   isFeatured?: T;
   isNewArrival?: T;
   isOnSale?: T;
+  odooId?: T;
   updatedAt?: T;
   createdAt?: T;
 }

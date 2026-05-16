@@ -38,5 +38,14 @@ export const Categories: CollectionConfig = {
       name: 'order',
       type: 'number',
     },
+    {
+      name: 'odooId',
+      type: 'number',
+      unique: true,
+      index: true,
+      admin: {
+        position: 'sidebar',
+      },
+    },
   ],
 }

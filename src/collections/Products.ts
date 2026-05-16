@@ -154,5 +154,27 @@ export const Products: CollectionConfig = {
       type: 'checkbox',
       defaultValue: false,
     },
+    {
+      name: 'odooId',
+      type: 'number',
+      unique: true,
+      index: true,
+      admin: {
+        position: 'sidebar',
+      },
+    },
   ],
+  hooks: {
+    beforeChange: [
+      ({ data }) => {
+        if (data.name && !data.slug) {
+          data.slug = data.name
+            .toLowerCase()
+            .replace(/ /g, '-')
+            .replace(/[^\w-]+/g, '')
+        }
+        return data
+      },
+    ],
+  },
 }

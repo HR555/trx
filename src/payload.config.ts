@@ -58,8 +58,20 @@ export default buildConfig({
   },
   collections: [Users, Media, Brands, Categories, Products],
   editor: lexicalEditor(),
-  cors: ['http://localhost:3000', 'http://localhost:3001', 'http://192.168.1.4:3000'],
-  csrf: ['http://localhost:3000', 'http://localhost:3001', 'http://192.168.1.4:3000'],
+  cors: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://192.168.1.4:3000',
+    'https://cms.trxcomputers.lk',
+    'https://trxcomputers.lk',
+  ],
+  csrf: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://192.168.1.4:3000',
+    'https://cms.trxcomputers.lk',
+    'https://trxcomputers.lk',
+  ],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
@@ -71,6 +83,35 @@ export default buildConfig({
       bucket: cloudflare.env.R2,
       collections: { media: true },
     }),
+  ],
+  endpoints: [
+    {
+      path: '/sync/categories',
+      method: 'get',
+      handler: async (req) => {
+        const { syncCategories } = await import('./lib/odoo')
+        const result = await syncCategories()
+        return Response.json(result)
+      },
+    },
+    {
+      path: '/sync/products',
+      method: 'get',
+      handler: async (req) => {
+        const { syncNewProducts } = await import('./lib/odoo')
+        const result = await syncNewProducts()
+        return Response.json(result)
+      },
+    },
+    {
+      path: '/sync/inventory',
+      method: 'get',
+      handler: async (req) => {
+        const { syncInventory } = await import('./lib/odoo')
+        const result = await syncInventory()
+        return Response.json(result)
+      },
+    },
   ],
 })
 
