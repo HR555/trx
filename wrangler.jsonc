@@ -1,7 +1,13 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "main": ".open-next/worker.js",
+  "main": "src/worker.ts",
   "name": "trx",
+  "triggers": {
+    "crons": [
+      "* * * * *",    // Every minute: Inventory sync
+      "0 * * * *"     // Every hour: Categories and Products sync
+    ]
+  },
   "compatibility_date": "2025-08-15",
   "compatibility_flags": [
     // Enable Node.js API
