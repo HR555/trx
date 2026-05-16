@@ -4,10 +4,12 @@ import config from '@/payload.config'
 const CATEGORIES_URL = 'https://ac65edvr7mja7sxl5pcw7moeou0zqrwt.lambda-url.us-east-1.on.aws/'
 const PRODUCTS_URL = 'https://ajubnnlxicx53an4oebbbs75sq0nuork.lambda-url.us-east-1.on.aws'
 
+const slugify = (text: string) => text.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
+
 export async function syncCategories() {
   const payload = await getPayload({ config })
   const response = await fetch(CATEGORIES_URL)
-  const odooCategories = await response.json()
+  const odooCategories = (await response.json()) as any[]
 
   for (const odooCat of odooCategories) {
     const existing = await payload.find({
@@ -23,7 +25,7 @@ export async function syncCategories() {
       name: odooCat.name,
       odooId: odooCat.id,
       order: odooCat.sequence,
-      slug: odooCat.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, ''),
+      slug: slugify(odooCat.name),
     }
 
     if (existing.docs.length > 0) {
@@ -58,7 +60,7 @@ export async function syncNewProducts() {
     if (!cat.odooId) continue
 
     const response = await fetch(`${PRODUCTS_URL}?categoryId=${cat.odooId}&instock=true`)
-    const odooProducts = await response.json()
+    const odooProducts = (await response.json()) as any[]
 
     for (const odooProd of odooProducts) {
       const existing = await payload.find({
@@ -77,6 +79,7 @@ export async function syncNewProducts() {
         price: odooProd.list_price,
         stock: odooProd.qty_available,
         categories: [cat.id],
+        slug: slugify(odooProd.name),
       }
 
       if (existing.docs.length > 0) {
