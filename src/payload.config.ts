@@ -64,6 +64,7 @@ export default buildConfig({
     'http://192.168.1.4:3000',
     'https://cms.trxcomputers.lk',
     'https://trxcomputers.lk',
+    'https://www.trxcomputers.lk',
   ],
   csrf: [
     'http://localhost:3000',
@@ -71,6 +72,7 @@ export default buildConfig({
     'http://192.168.1.4:3000',
     'https://cms.trxcomputers.lk',
     'https://trxcomputers.lk',
+    'https://www.trxcomputers.lk',
   ],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
