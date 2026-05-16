@@ -10,6 +10,9 @@ import { r2Storage } from '@payloadcms/storage-r2'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { Brands } from './collections/Brands'
+import { Categories } from './collections/Categories'
+import { Products } from './collections/Products'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -50,8 +53,10 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media],
+  collections: [Users, Media, Brands, Categories, Products],
   editor: lexicalEditor(),
+  cors: ['http://localhost:3000', 'http://localhost:3001', 'http://192.168.1.4:3000'],
+  csrf: ['http://localhost:3000', 'http://localhost:3001', 'http://192.168.1.4:3000'],
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
