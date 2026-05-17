@@ -30,10 +30,10 @@ export default {
         await callSync('/sync/products')
         break
 
-      case '* * * * *': // Every minute
-        console.log('Running Minute Sync (Inventory)...')
-        await callSync('/sync/inventory')
-        break
+      // case '* * * * *': // Every minute
+      //   console.log('Running Minute Sync (Inventory)...')
+      //   await callSync('/sync/inventory')
+      //   break
 
       default:
         console.log('Unknown cron trigger:', event.cron)
