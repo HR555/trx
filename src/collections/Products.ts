@@ -135,6 +135,16 @@ export const Products: CollectionConfig = {
       defaultValue: 0,
     },
     {
+      name: 'storeStock',
+      type: 'number',
+      defaultValue: 0,
+    },
+    {
+      name: 'warehouseStock',
+      type: 'number',
+      defaultValue: 0,
+    },
+    {
       name: 'sku',
       type: 'text',
       unique: true,

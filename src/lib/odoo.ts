@@ -2,8 +2,8 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 
 const CATEGORIES_URL = 'https://ac65edvr7mja7sxl5pcw7moeou0zqrwt.lambda-url.us-east-1.on.aws/'
-// const PRODUCTS_URL = 'https://ajubnnlxicx53an4oebbbs75sq0nuork.lambda-url.us-east-1.on.aws' // trx
-const PRODUCTS_URL = 'https://j4qngdae3aotate5echyul6zvq0ucmza.lambda-url.us-east-1.on.aws' // main
+const PRODUCTS_URL = 'https://ajubnnlxicx53an4oebbbs75sq0nuork.lambda-url.us-east-1.on.aws' // trx
+// const PRODUCTS_URL = 'https://j4qngdae3aotate5echyul6zvq0ucmza.lambda-url.us-east-1.on.aws' // main
 // 
 
 const slugify = (text: string) => text.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
@@ -56,13 +56,29 @@ export async function syncNewProducts() {
     limit: 100,
   })
 
+  console.log(`[Sync Products] Found ${categories.docs.length} categories in Payload CMS`)
+
   let totalSynced = 0
 
   for (const cat of categories.docs) {
-    if (!cat.odooId) continue
+    if (!cat.odooId) {
+      console.log(`[Sync Products] Skipping category ${cat.name} because it has no odooId`)
+      continue
+    }
 
+    console.log(`[Sync Products] Querying Odoo for category: ${cat.name} (odooId: ${cat.odooId})`)
+
+    // Fetch products belonging to target warehouses, including the pre-calculated store and warehouse stock splits
     const response = await fetch(`${PRODUCTS_URL}?categoryId=${cat.odooId}&instock=true`)
-    const odooProducts = (await response.json()) as any[]
+
+    let odooProducts: any[] = []
+    try {
+      odooProducts = (await response.json()) as any[]
+      console.log(`[Sync Products] Category ${cat.name} returned ${odooProducts.length} products from Odoo`)
+    } catch (e) {
+      console.error(`Error parsing products for category ${cat.odooId}:`, e)
+      continue
+    }
 
     for (const odooProd of odooProducts) {
       const existing = await payload.find({
@@ -74,12 +90,17 @@ export async function syncNewProducts() {
         },
       })
 
+      const storeStock = odooProd.qty_store || 0
+      const warehouseStock = odooProd.qty_warehouse || 0
+
       const data = {
         name: odooProd.name,
         odooId: odooProd.id,
         sku: odooProd.id.toString(),
         price: odooProd.list_price,
         stock: odooProd.qty_available,
+        storeStock,
+        warehouseStock,
         categories: [cat.id],
         slug: slugify(odooProd.name),
       }

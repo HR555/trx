@@ -273,6 +273,8 @@ export interface Product {
       }[]
     | null;
   stock?: number | null;
+  storeStock?: number | null;
+  warehouseStock?: number | null;
   sku?: string | null;
   isFeatured?: boolean | null;
   isNewArrival?: boolean | null;
@@ -482,6 +484,8 @@ export interface ProductsSelect<T extends boolean = true> {
         id?: T;
       };
   stock?: T;
+  storeStock?: T;
+  warehouseStock?: T;
   sku?: T;
   isFeatured?: T;
   isNewArrival?: T;
