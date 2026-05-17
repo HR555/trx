@@ -23,11 +23,35 @@ export async function syncCategories() {
       },
     })
 
+    let slug = slugify(odooCat.name)
+
+    // Check if there is another category with this slug (excluding the current one)
+    const slugConflict = await payload.find({
+      collection: 'categories',
+      where: {
+        slug: {
+          equals: slug,
+        },
+        ...(existing.docs.length > 0
+          ? {
+              odooId: {
+                not_equals: odooCat.id,
+              },
+            }
+          : {}),
+      },
+      limit: 1,
+    })
+
+    if (slugConflict.docs.length > 0) {
+      slug = `${slug}-${odooCat.id}`
+    }
+
     const data = {
       name: odooCat.name,
       odooId: odooCat.id,
       order: odooCat.sequence,
-      slug: slugify(odooCat.name),
+      slug,
     }
 
     if (existing.docs.length > 0) {
@@ -102,6 +126,30 @@ export async function syncNewProducts() {
       const storeStock = odooProd.qty_store || 0
       const warehouseStock = odooProd.qty_warehouse || 0
 
+      let slug = slugify(odooProd.name)
+
+      // Check if there is another product with this slug (excluding the current one)
+      const slugConflict = await payload.find({
+        collection: 'products',
+        where: {
+          slug: {
+            equals: slug,
+          },
+          ...(existing.docs.length > 0
+            ? {
+                odooId: {
+                  not_equals: odooProd.id,
+                },
+              }
+            : {}),
+        },
+        limit: 1,
+      })
+
+      if (slugConflict.docs.length > 0) {
+        slug = `${slug}-${odooProd.id}`
+      }
+
       const data = {
         name: odooProd.name,
         odooId: odooProd.id,
@@ -111,7 +159,7 @@ export async function syncNewProducts() {
         storeStock,
         warehouseStock,
         categories: [cat.id],
-        slug: slugify(odooProd.name),
+        slug,
       }
 
       if (existing.docs.length > 0) {
