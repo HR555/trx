@@ -84,9 +84,18 @@ export async function syncNewProducts() {
       const existing = await payload.find({
         collection: 'products',
         where: {
-          odooId: {
-            equals: odooProd.id,
-          },
+          or: [
+            {
+              odooId: {
+                equals: odooProd.id,
+              },
+            },
+            {
+              sku: {
+                equals: odooProd.id.toString(),
+              },
+            },
+          ],
         },
       })
 
