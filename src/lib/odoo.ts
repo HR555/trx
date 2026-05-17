@@ -2,7 +2,9 @@ import { getPayload } from 'payload'
 import config from '@/payload.config'
 
 const CATEGORIES_URL = 'https://ac65edvr7mja7sxl5pcw7moeou0zqrwt.lambda-url.us-east-1.on.aws/'
-const PRODUCTS_URL = 'https://ajubnnlxicx53an4oebbbs75sq0nuork.lambda-url.us-east-1.on.aws'
+// const PRODUCTS_URL = 'https://ajubnnlxicx53an4oebbbs75sq0nuork.lambda-url.us-east-1.on.aws' // trx
+const PRODUCTS_URL = 'https://j4qngdae3aotate5echyul6zvq0ucmza.lambda-url.us-east-1.on.aws' // main
+// 
 
 const slugify = (text: string) => text.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
 

@@ -25,8 +25,8 @@ export default {
 
     switch (event.cron) {
       case '0 * * * *': // Every hour
-        console.log('Running Hourly Sync (Categories & Products)...')
-        await callSync('/sync/categories')
+        console.log('Running Hourly Sync (Products)...')
+        // await callSync('/sync/categories')
         await callSync('/sync/products')
         break
 
