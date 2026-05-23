@@ -153,7 +153,7 @@ export async function handleSanitySync(dryRun = true, categoryOdooId?: number) {
     limit: 500,
   })
   for (const b of existingBrands.docs) {
-    brandCache[slugify(b.name)] = b.id
+    brandCache[slugify(b.name)] = b.id.toString()
   }
 
   for (const cat of filteredCategories) {
@@ -273,7 +273,7 @@ export async function handleSanitySync(dryRun = true, categoryOdooId?: number) {
                   slug: brandSlug,
                 },
               })
-              brandId = newBrand.id
+              brandId = newBrand.id.toString()
               brandCache[brandSlug] = brandId
               brandsCreatedCount++
             }
