@@ -89,7 +89,9 @@ async function getOrUploadMedia(payload: any, url: string, alt: string, targetFi
   const buffer = Buffer.from(arrayBuffer)
   const contentType = res.headers.get('content-type') || 'image/jpeg'
 
-  console.log(`[Sanity Sync] Uploading image to Payload: ${targetFilename} (${buffer.length} bytes)`)
+  console.log(
+    `[Sanity Sync] Uploading image to Payload: ${targetFilename} (${buffer.length} bytes)`,
+  )
   const mediaDoc = await payload.create({
     collection: 'media',
     data: {
@@ -109,7 +111,9 @@ async function getOrUploadMedia(payload: any, url: string, alt: string, targetFi
 export async function handleSanitySync(dryRun = true, categoryOdooId?: number) {
   const payload = await getPayload({ config })
 
-  console.log(`[Sanity Sync] Starting sync. Mode: ${dryRun ? 'DRY RUN' : 'EXECUTE'}${categoryOdooId ? ` | Category filter: ${categoryOdooId}` : ' | All categories'}`)
+  console.log(
+    `[Sanity Sync] Starting sync. Mode: ${dryRun ? 'DRY RUN' : 'EXECUTE'}${categoryOdooId ? ` | Category filter: ${categoryOdooId}` : ' | All categories'}`,
+  )
 
   // 1. Get all categories from Payload that have an odooId
   const categories = await payload.find({
@@ -136,14 +140,14 @@ export async function handleSanitySync(dryRun = true, categoryOdooId?: number) {
   let notMatchedInPayload = 0
   let alreadyFullySynced = 0
   let needsSync = 0
-  
+
   const toSyncList: any[] = []
   const notFoundList: any[] = []
 
   let productsUpdatedCount = 0
   let imagesUploadedCount = 0
   let brandsCreatedCount = 0
-  
+
   // Cache brands to avoid excessive queries
   const brandCache: Record<string, string> = {}
 
@@ -162,8 +166,10 @@ export async function handleSanitySync(dryRun = true, categoryOdooId?: number) {
       continue
     }
 
-    console.log(`[Sanity Sync] Querying Sanity for category products: ${cat.name} (odooId: ${cat.odooId})`)
-    
+    console.log(
+      `[Sanity Sync] Querying Sanity for category products: ${cat.name} (odooId: ${cat.odooId})`,
+    )
+
     // Batch query Sanity for products under this category
     const sanityQuery = `*[_type == "product" && category->odoo_id == ${cat.odooId}] {
       name,
@@ -185,9 +191,11 @@ export async function handleSanitySync(dryRun = true, categoryOdooId?: number) {
 
     let sanityProducts: any[] = []
     try {
-      sanityProducts = await querySanity(sanityQuery)
+      sanityProducts = (await querySanity(sanityQuery)) as any[]
       totalSanityProductsChecked += sanityProducts.length
-      console.log(`[Sanity Sync] Category ${cat.name} has ${sanityProducts.length} products in Sanity`)
+      console.log(
+        `[Sanity Sync] Category ${cat.name} has ${sanityProducts.length} products in Sanity`,
+      )
     } catch (e) {
       console.error(`[Sanity Sync] Error fetching category ${cat.name} from Sanity:`, e)
       continue
@@ -242,10 +250,13 @@ export async function handleSanitySync(dryRun = true, categoryOdooId?: number) {
       needsSync++
 
       const missingFields: string[] = []
-      if (missingImages && sanityProd.images && sanityProd.images.length > 0) missingFields.push('images')
-      if (missingDescription && sanityProd.description && sanityProd.description.length > 0) missingFields.push('description')
+      if (missingImages && sanityProd.images && sanityProd.images.length > 0)
+        missingFields.push('images')
+      if (missingDescription && sanityProd.description && sanityProd.description.length > 0)
+        missingFields.push('description')
       if (missingBrand && sanityProd.brand) missingFields.push('brand')
-      if (missingSpecs && sanityProd.specs && sanityProd.specs.length > 0) missingFields.push('specifications')
+      if (missingSpecs && sanityProd.specs && sanityProd.specs.length > 0)
+        missingFields.push('specifications')
       if (missingTags && sanityProd.tags && sanityProd.tags.length > 0) missingFields.push('tags')
 
       toSyncList.push({
@@ -292,7 +303,12 @@ export async function handleSanitySync(dryRun = true, categoryOdooId?: number) {
               const targetFilename = `${slugify(payloadProd.name || sanityProd.name)}-${i + 1}.${fileExt}`
 
               try {
-                const mediaId = await getOrUploadMedia(payload, img.url, img.alt || payloadProd.name, targetFilename)
+                const mediaId = await getOrUploadMedia(
+                  payload,
+                  img.url,
+                  img.alt || payloadProd.name,
+                  targetFilename,
+                )
                 imagesData.push({
                   image: mediaId,
                   isPrimary: img.main_image || i === 0,
@@ -336,7 +352,9 @@ export async function handleSanitySync(dryRun = true, categoryOdooId?: number) {
 
           // Update the Payload product if we mapped any new data
           if (Object.keys(updateData).length > 0) {
-            console.log(`[Sanity Sync] Updating product: ${payloadProd.name} (odooId: ${payloadProd.odooId})`)
+            console.log(
+              `[Sanity Sync] Updating product: ${payloadProd.name} (odooId: ${payloadProd.odooId})`,
+            )
             await payload.update({
               collection: 'products',
               id: payloadProd.id,
@@ -345,7 +363,10 @@ export async function handleSanitySync(dryRun = true, categoryOdooId?: number) {
             productsUpdatedCount++
           }
         } catch (syncErr) {
-          console.error(`[Sanity Sync] Failed to sync product ${sanityProd.name} (odooId: ${sanityProd.odoo_id}):`, syncErr)
+          console.error(
+            `[Sanity Sync] Failed to sync product ${sanityProd.name} (odooId: ${sanityProd.odoo_id}):`,
+            syncErr,
+          )
         }
       }
     }
