@@ -114,6 +114,20 @@ export default buildConfig({
         return Response.json(result)
       },
     },
+    {
+      path: '/sync/sanity',
+      method: 'get',
+      handler: async (req) => {
+        const { handleSanitySync } = await import('./lib/sanity')
+        const url = new URL(req.url)
+        const dryRun = url.searchParams.get('dryRun') !== 'false'
+        const categoryOdooId = url.searchParams.get('category')
+          ? Number(url.searchParams.get('category'))
+          : undefined
+        const result = await handleSanitySync(dryRun, categoryOdooId)
+        return Response.json(result)
+      },
+    },
   ],
 })
 
